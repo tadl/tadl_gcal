@@ -1,0 +1,16 @@
+<html>
+<head>
+  <title>TADL Gcal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
+  <%= csrf_meta_tags %>
+	</head>
+	<body>
+		<% if !current_user %>
+			<%= link_to "Staff Login", "/auth/google_oauth2", id: "sign_in", protocol: 'https' %>
+		<% else %>
+			<strong><%= current_user.name %></strong>
+    	<%= link_to "logout", signout_path, id: "sign_out" %>
+		<% end %>
+		<%= yield %>
+	</body>
+</html>

@@ -1,0 +1,11 @@
+<% if flash[:alert] %>
+	<div id="message_div">
+		<%= flash[:alert] %>
+	</div>
+<% end %>
+<% if current_user %>
+	<ul id="main_menu">
+		<li>Create Event</li>
+		<li>View Workorders</li>
+	</ul>
+<% end %>	

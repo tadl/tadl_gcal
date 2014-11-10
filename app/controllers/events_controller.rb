@@ -4,7 +4,7 @@ require 'dotenv'
 
   def all
     if params[:days_from_now]
-      days_from_now = params[:days_from_now].to_i
+      days_from_now = params[:days_from_now].to_i + 1
     else
       days_from_now = 1
     end  
@@ -26,13 +26,14 @@ require 'dotenv'
         end
       end
     end
+   
     events = events.sort_by{|k| k[:start_time_raw]}
-  	render :json =>{:days_from_now => days_from_now, :events => events}	
+  	render :json =>{:events => events}	
   end
 
   def fetch_events(cal_id, room_name, days_from_now)
     events = []
-    start_date = Date.today.in_time_zone
+    start_date = Time.zone.now.beginning_of_day
     end_date =  start_date + (days_from_now *24*60*60)
     cal = Google::Calendar.new(:username => ENV['username'], :password => ENV['password'], :calendar => cal_id, :app_name =>'alpine-freedom-720')
     cal_events = cal.find_events_in_range(start_date, end_date)
@@ -42,7 +43,8 @@ require 'dotenv'
             :name => e.title.gsub('- advance',''),
             :id => e.id,
             :updated_time => e.updated_time,
-            :day => is_today(e.start_time.in_time_zone('Eastern Time (US & Canada)').strftime('%B %e')),
+            :day => is_today(e.start_time.in_time_zone('Eastern Time (US & Canada)').strftime('%B %e'), e.start_time.in_time_zone('Eastern Time (US & Canada)')),
+            :day_of_week => e.start_time.in_time_zone('Eastern Time (US & Canada)').strftime('%A'),
             :start_time_raw => e.start_time,
             :start_time => e.start_time.in_time_zone('Eastern Time (US & Canada)').strftime('%l:%M %p'),
             :end_time_raw => e.end_time,
@@ -55,15 +57,16 @@ require 'dotenv'
     return events
   end
 
-  def is_today(date)
-    today = Date.today.in_time_zone.strftime('%B %e')
-    tomorrow = (Date.today.in_time_zone + (1*24*60*60)).strftime('%B %e')
+  def is_today(date, raw_start)
+    today = Time.zone.now.beginning_of_day.strftime('%B %e')
+    tomorrow = (Time.zone.now.beginning_of_day + (1*24*60*60)).strftime('%B %e')
+    day_of_week = raw_start.strftime('%A')
     if date == today
       return "Today"
     elsif date == tomorrow 
       return "Tomorrow"
     else
-      return date
+      return day_of_week + ', ' + date
     end
   end
 

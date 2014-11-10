@@ -6,13 +6,17 @@ gem 'rails-api'
 
 gem 'spring', :group => :development
 
-gem 'sqlite3'
+gem 'pg'
 
 gem 'google_calendar', :git => 'git://github.com/swmorey/google_calendar', :branch => 'master'
 
 gem 'icalendar'
 
 gem 'dotenv-rails', :groups => :development
+
+gem 'omniauth-oauth2'
+
+gem 'omniauth-google-oauth2'
 
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.1.2'
