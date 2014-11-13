@@ -3,6 +3,11 @@
   <title>TADL Gcal</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
   <%= csrf_meta_tags %>
+  <%= javascript_include_tag 'application' %>
+  <%= stylesheet_link_tag 'application', media: 'all' %>
+  <% if content_for?(:head) %>
+    <%= yield(:head) %>
+  <% end %>
 	</head>
 	<body>
 		<% if !current_user %>

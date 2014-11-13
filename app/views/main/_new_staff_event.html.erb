@@ -1,0 +1,38 @@
+<% if @step == '1' %>
+	<h2>Check Availability</h2>
+	<iframe style="border-width: 0;" src="https://www.google.com/calendar/b/0/embed?title=Meeting%20Rooms&amp;mode=WEEK&amp;height=600&amp;wkst=1&amp;bgcolor=%23FFFFFF&amp;src=tadl.org_2d3338313731393032333233%40resource.calendar.google.com&amp;color=%23711616&amp;src=tadl.org_3438383133313638343937%40resource.calendar.google.com&amp;color=%23113F47&amp;src=tadl.org_3934353735303033393235%40resource.calendar.google.com&amp;color=%23125A12&amp;src=tadl.org_35303232393338322d373135@resource.calendar.google.com&amp;color=%23FFFF00&amp;src=tadl.org_393731343335322d373338@resource.calendar.google.com&amp;color=%2300FFFF&amp;ctz=America%2FNew_York" frameborder="0" scrolling="no" width="750" height="600"></iframe>
+	<br>
+	<div class="room_name" style="background-color: #711616; color: #fff;">McGuire Rm</div>
+	<div class="room_name" style="background-color: #113f47; color: #fff;">Thirlby Rm</div>
+	<div class="room_name" style="background-color: #125a12; color: #fff;">Study Rm D</div>
+	<div class="room_name" style="background-color: #ffff00; color: #000;">Children's Story Rm</div>
+	<div class="room_name" style="background-color: #00ffff; color: #000;">Nelson Rm</div>
+	<div style="clear: both"></div>
+	<h2>Select Room, Date and Time</h2>
+	<span> Room: </span>
+	<select  id="room" class="">
+		<option disabled="disabled" selected="selected">Select Room</option>
+		<option>McGuire</option>
+		<option>Thirlby</option>
+		<option>Study Room D</option>
+		<option>Children's Story Room</option>
+		<option>Nelson Room</option>
+	</select>
+	<br>
+	<span> Date: </span>
+	<%= select_date Date.today, prefix: :start_date, order: [:month, :day, :year] %>
+	<br>
+	<span> Start Time: </span>
+	<%= time_select 'start_time', 'start_time', {:minute_step => 30, :ampm => true} %>
+	<br>
+	<span> End Time: </span>
+	<%= time_select 'end_time', 'end_time', {:minute_step => 30, :ampm => true} %>
+<% end %>
+<% if @step == '2' %>
+	<h2>Event Details</h2>
+	<%= link_to 'Next', new_staff_event_path(:step => '3'), :remote => true %>
+<% end %>
+<% if @step == '3' %>
+	<h2>Confirmation</h2>
+	<%= link_to 'Next', new_staff_event_path(:step => '4'), :remote => true %>
+<% end %>
