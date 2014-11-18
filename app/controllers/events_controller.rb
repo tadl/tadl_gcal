@@ -19,6 +19,47 @@ class EventsController < ApplicationController
   	render :json =>{:events => events}	
   end
 
+  def create
+    summary = params[:summary]
+    description = params[:description]
+    # start_time = params[:start]
+    # end_time = params[:end]
+    client = create_gapi_client()
+    cal_api = client.discovered_api('calendar', 'v3')
+    cal_id = 'tadl.org_3438383133313638343937@resource.calendar.google.com'
+    start_time = Time.zone.now.beginning_of_day
+    end_time = start_time + (60*60)
+    event = {
+      'summary' => summary,
+      'location' => 'Room',
+      'start' => {
+        'dateTime' => start_time.utc.iso8601
+      },
+      'end' => {
+        'dateTime' => end_time.utc.iso8601
+      },
+      'description' => description
+    }
+
+    if params[:summary] && params[:summary]
+      result = client.execute({
+        :api_method => cal_api.events.insert,
+        :parameters => {
+          calendarId: cal_id,
+        },
+        :body => JSON.dump(event),
+        :headers => {'Content-Type' => 'application/json'}
+      })
+    end
+
+    if result && result.data.id
+      message = result.data
+    else
+      message = "error"
+    end
+    render :json =>{:message => message}
+  end
+
   def fetch_events(cal_id, room_name, days_to_show)
     client = create_gapi_client()
     cal_api = client.discovered_api('calendar', 'v3')

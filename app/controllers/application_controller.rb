@@ -1,6 +1,7 @@
 class ApplicationController < ActionController::Base
+	require 'active_support/core_ext/numeric'
 	helper_method :current_user	
-  
+ 
   def rooms
 		@rooms = eval(ENV['rooms'])
 	end

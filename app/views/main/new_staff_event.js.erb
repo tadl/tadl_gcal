@@ -1,5 +1,52 @@
 function load_create_staff_event(){
+	<% if @previous_step == '0' %>
+		localStorage.clear()
+	<% else %>
+		load_saved_event()
+	<% end %>	
+
 	$('#content').html("<%= escape_javascript(render(:partial => 'new_staff_event')) %>");
 }
 
-load_create_staff_event();
+function validate_date_time(){
+	room = $("#room").val()
+	day = $("#start_date_month").val() + '/' + $("#start_date_day").val()+ '/' + $("#start_date_year").val()
+	start_time = $("#start_time_start_time_4i").val() + ':' + $("#start_time_start_time_5i").val()
+	end_time = $("#end_time_end_time_4i").val() + ':' + $("#end_time_end_time_5i").val()
+	if(room){
+		if (start_time < end_time){
+			$('#link_to_step_2').css('display','block')
+			localStorage.setItem('room', room);
+			localStorage.setItem('day', day);
+			localStorage.setItem('start_time', start_time);
+			localStorage.setItem('end_time', end_time);
+		}else{
+			$('#link_to_step_2').css('display','none')
+			alert('Invalid start or end times.')
+		}
+	}else{
+		$('#link_to_step_2').css('display','none')
+	}
+}
+
+function load_saved_event(){
+	alert('going back in time!')
+}
+
+jQuery(function(){
+	
+	load_create_staff_event();
+	<% if @step == '1' %>
+		$("#date_time_form").change(function() {
+	  		validate_date_time()
+		});
+	<% end %>
+	<% if @step == '2' %>
+
+	<% end %>	
+});
+
+
+
+
+

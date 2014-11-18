@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   match 'new_staff_event', to: 'main#new_staff_event', as: 'new_staff_event', via: [:get, :post], :defaults => { :format => 'js' }
   get 'events/list'
   get 'events/by_room'
+  get 'events/create'
   match 'auth/:provider/callback', to: 'sessions#create', via: [:get, :post]
   match 'auth/failure', to: redirect('/'), via: [:get, :post]
   match 'signout', to: 'sessions#destroy', as: 'signout', via: [:get, :post]

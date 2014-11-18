@@ -8,29 +8,36 @@
 	<div class="room_name" style="background-color: #ffff00; color: #000;">Children's Story Rm</div>
 	<div class="room_name" style="background-color: #00ffff; color: #000;">Nelson Rm</div>
 	<div style="clear: both"></div>
-	<h2>Select Room, Date and Time</h2>
-	<span> Room: </span>
-	<select  id="room" class="">
-		<option disabled="disabled" selected="selected">Select Room</option>
-		<option>McGuire</option>
-		<option>Thirlby</option>
-		<option>Study Room D</option>
-		<option>Children's Story Room</option>
-		<option>Nelson Room</option>
-	</select>
-	<br>
-	<span> Date: </span>
-	<%= select_date Date.today, prefix: :start_date, order: [:month, :day, :year] %>
-	<br>
-	<span> Start Time: </span>
-	<%= time_select 'start_time', 'start_time', {:minute_step => 30, :ampm => true} %>
-	<br>
-	<span> End Time: </span>
-	<%= time_select 'end_time', 'end_time', {:minute_step => 30, :ampm => true} %>
+	<div id="date_time_form">
+		<h2>Select Room, Date and Time</h2>
+		<span> Date: </span>
+		<%= select_date Date.today, prefix: :start_date, order: [:month, :day, :year] %>
+		<br>
+		<span> Start Time: </span>
+		<%= time_select 'start_time', 'start_time', {:minute_step => 30, :ampm => true, :default => @default_start} %>
+		<br>
+		<span> End Time: </span>
+		<%= time_select 'end_time', 'end_time', {:minute_step => 30, :ampm => true, :default => @default_end} %>
+		<br>
+		<span> Room: </span>
+		<select id="room" class="">
+			<option disabled="disabled" selected="selected">Select Room</option>
+			<option>McGuire</option>
+			<option>Thirlby</option>
+			<option>Study Room D</option>
+			<option>Children's Story Room</option>
+			<option>Nelson Room</option>
+		</select>
+	</div>	
+		<br>
+	<div id="link_to_step_2" style="display: none">
+		<%= link_to 'Next', new_staff_event_path(:step => '2'), :remote => true %>
+	</div>
 <% end %>
 <% if @step == '2' %>
 	<h2>Event Details</h2>
 	<%= link_to 'Next', new_staff_event_path(:step => '3'), :remote => true %>
+	<%= link_to 'Back', new_staff_event_path(:step => '1', :previous_step => '2' ), :remote => true %>
 <% end %>
 <% if @step == '3' %>
 	<h2>Confirmation</h2>
