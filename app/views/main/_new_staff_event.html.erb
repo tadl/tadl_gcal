@@ -1,5 +1,5 @@
 <% if @step == '1' %>
-	<h2>Check Availability</h2>
+	<h2> Step #1: Check Availability</h2>
 	<iframe style="border-width: 0;" src="https://www.google.com/calendar/b/0/embed?title=Meeting%20Rooms&amp;mode=WEEK&amp;height=600&amp;wkst=1&amp;bgcolor=%23FFFFFF&amp;src=tadl.org_2d3338313731393032333233%40resource.calendar.google.com&amp;color=%23711616&amp;src=tadl.org_3438383133313638343937%40resource.calendar.google.com&amp;color=%23113F47&amp;src=tadl.org_3934353735303033393235%40resource.calendar.google.com&amp;color=%23125A12&amp;src=tadl.org_35303232393338322d373135@resource.calendar.google.com&amp;color=%23FFFF00&amp;src=tadl.org_393731343335322d373338@resource.calendar.google.com&amp;color=%2300FFFF&amp;ctz=America%2FNew_York" frameborder="0" scrolling="no" width="750" height="600"></iframe>
 	<br>
 	<div class="room_name" style="background-color: #711616; color: #fff;">McGuire Rm</div>
@@ -9,15 +9,15 @@
 	<div class="room_name" style="background-color: #00ffff; color: #000;">Nelson Rm</div>
 	<div style="clear: both"></div>
 	<div id="date_time_form">
-		<h2>Select Room, Date and Time</h2>
+		<h2>Step #2: Select Date, Time and Room</h2>
 		<span> Date: </span>
 		<%= select_date Date.today, prefix: :start_date, order: [:month, :day, :year] %>
 		<br>
 		<span> Start Time: </span>
-		<%= time_select 'start_time', 'start_time', {:minute_step => 30, :ampm => true, :default => @default_start} %>
+		<%= time_select 'start_time', 'start_time', {:minute_step => 30, :ampm => true, :default => @default_start}, {:class => 'event_times_box'} %>
 		<br>
 		<span> End Time: </span>
-		<%= time_select 'end_time', 'end_time', {:minute_step => 30, :ampm => true, :default => @default_end} %>
+		<%= time_select 'end_time', 'end_time', {:minute_step => 30, :ampm => true, :default => @default_end}, {:class => 'event_times_box'} %>
 		<br>
 		<span> Room: </span>
 		<select id="room" class="">
@@ -35,11 +35,65 @@
 	</div>
 <% end %>
 <% if @step == '2' %>
-	<h2>Event Details</h2>
-	<%= link_to 'Next', new_staff_event_path(:step => '3'), :remote => true %>
+	<h2>Step#3: Event Details</h2>
+	<div id="event_details_form">
+		<span> Event Title: </span>
+		<input id="title"></input>
+		<br>
+		<span> Event Summary: </span>
+		<input id="summary"></input>
+		<br>
+		<span> Number Attending: </span>
+		<input id="attending"></input>
+		<br>
+		<span> Responsible Person or Organization: </span>
+		<input id="responsible"></input>
+		<br>
+		<span> Phone Number: </span>
+		<input id="phone"></input>
+		<br>
+		<span> Email: </span>
+		<input id="email"></input>
+		<br>
+	</div>
+	<div id="link_to_step_3" style="display: none">	
+		<%= link_to 'Next', new_staff_event_path(:step => '3'), :remote => true %>
+	</div>
 	<%= link_to 'Back', new_staff_event_path(:step => '1', :previous_step => '2' ), :remote => true %>
 <% end %>
 <% if @step == '3' %>
-	<h2>Confirmation</h2>
-	<%= link_to 'Next', new_staff_event_path(:step => '4'), :remote => true %>
+	<h2>Step #4 Confirmation</h2>
+	<div id="confirmation">
+		<span> Date: </span>
+		<span id="day"></span>
+		<br>
+		<span> Start Time: </span>
+		<span id="pretty_start"></span>
+		<br>
+		<span> End Time: </span>
+		<span id="pretty_end"></span>
+		<br>
+		<span> Room: </span>
+		<span id="room"></span>
+		<br>
+		<span> Event Title: </span>
+		<span id="title"></span>
+		<br>
+		<span> Event Summary: </span>
+		<span id="summary"></span>
+		<br>
+		<span> Number Attending: </span>
+		<span id="attending"></span>
+		<br>
+		<span> Responsible Person or Organization: </span>
+		<span id="responsible"></span>
+		<br>
+		<span> Phone Number: </span>
+		<span id="phone"></span>
+		<br>
+		<span> Email: </span>
+		<span id="email"></span>
+		<br>
+	</div>
+	<%= link_to 'Back', new_staff_event_path(:step => '2', :previous_step => '3' ), :remote => true %>
 <% end %>

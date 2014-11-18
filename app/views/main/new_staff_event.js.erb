@@ -1,48 +1,114 @@
 function load_create_staff_event(){
-	<% if @previous_step == '0' %>
-		localStorage.clear()
-	<% else %>
-		load_saved_event()
-	<% end %>	
-
 	$('#content').html("<%= escape_javascript(render(:partial => 'new_staff_event')) %>");
 }
 
 function validate_date_time(){
 	room = $("#room").val()
 	day = $("#start_date_month").val() + '/' + $("#start_date_day").val()+ '/' + $("#start_date_year").val()
-	start_time = $("#start_time_start_time_4i").val() + ':' + $("#start_time_start_time_5i").val()
-	end_time = $("#end_time_end_time_4i").val() + ':' + $("#end_time_end_time_5i").val()
+	start_time_hour = $("#start_time_start_time_4i").val() 
+	start_time_minute = $("#start_time_start_time_5i").val()
+	end_time_hour = $("#end_time_end_time_4i").val() 
+	end_time_minute = $("#end_time_end_time_5i").val()
+	start_time_full = start_time_hour + ':' + start_time_minute
+	end_time_full = end_time_hour + ':' + end_time_minute
 	if(room){
-		if (start_time < end_time){
+		if (start_time_full < end_time_full){
+			$('.event_times_box').css('border','')
 			$('#link_to_step_2').css('display','block')
+			pretty_start = moment(day + " " + start_time_full).format('h:mm a')
+			pretty_end = moment(day + " " + end_time_full).format('h:mm a')
+			localStorage.setItem('pretty_start', pretty_start)
+			localStorage.setItem('pretty_end', pretty_end)
 			localStorage.setItem('room', room);
 			localStorage.setItem('day', day);
-			localStorage.setItem('start_time', start_time);
-			localStorage.setItem('end_time', end_time);
+			localStorage.setItem('start_time_hour', start_time_hour);
+			localStorage.setItem('start_time_minute', start_time_minute);
+			localStorage.setItem('end_time_hour', end_time_hour);
+			localStorage.setItem('end_time_minute', end_time_minute);
 		}else{
 			$('#link_to_step_2').css('display','none')
-			alert('Invalid start or end times.')
+			$('.event_times_box').css('border','2px solid red')
 		}
 	}else{
 		$('#link_to_step_2').css('display','none')
 	}
 }
 
+function validate_event_details(){
+	title = $("#title").val()
+	summary = $("#summary").val()
+	attending = $("#attending").val()
+	responsible = $("#responsible").val()
+	phone = $("#phone").val()
+	email = $("#email").val()
+	localStorage.setItem('title', title);
+	localStorage.setItem('summary', summary);
+	localStorage.setItem('attending', attending);
+	localStorage.setItem('responsible', responsible);
+	localStorage.setItem('phone', phone);
+	localStorage.setItem('email', email);
+	if(title && attending && (phone || email)){
+	  $('#link_to_step_3').css('display','block')
+	}else{
+	  $('#link_to_step_3').css('display','none')
+	}
+}
+
 function load_saved_event(){
-	alert('going back in time!')
+	day_array = localStorage.getItem('day').split('/')
+	$("#room").val(localStorage.getItem('room'))
+	$("#start_date_month").val(day_array[0])
+	$("#start_date_day").val(day_array[1])
+	$("#start_date_year").val(day_array[2])
+	$("#start_time_start_time_4i").val(localStorage.getItem('start_time_hour')) 
+	$("#start_time_start_time_5i").val(localStorage.getItem('start_time_minute')) 
+	$("#end_time_end_time_4i").val(localStorage.getItem('end_time_hour'))
+	$("#end_time_end_time_5i").val(localStorage.getItem('end_time_minute'))
+	$("#title").val(localStorage.getItem('title'))
+	$("#summary").val(localStorage.getItem('summary'))
+	$("#attending").val(localStorage.getItem('attending'))
+	$("#responsible").val(localStorage.getItem('responsible'))
+	$("#phone").val(localStorage.getItem('phone'))
+	$("#email").val(localStorage.getItem('email'))
+	$("#pretty_start").val(localStorage.getItem('pretty_start'))
+	$("#pretty_end").val(localStorage.getItem('pretty_end'))
+}
+
+function display_confirmation(){
+	$("#day").html(localStorage.getItem('day'))
+	$("#room").html(localStorage.getItem('room'))
+	$("#title").html(localStorage.getItem('title'))
+	$("#summary").html(localStorage.getItem('summary'))
+	$("#attending").html(localStorage.getItem('attending'))
+	$("#responsible").html(localStorage.getItem('responsible'))
+	$("#phone").html(localStorage.getItem('phone'))
+	$("#email").html(localStorage.getItem('email'))
+	$("#pretty_start").html(localStorage.getItem('pretty_start'))
+	$("#pretty_end").html(localStorage.getItem('pretty_end'))
 }
 
 jQuery(function(){
-	
 	load_create_staff_event();
 	<% if @step == '1' %>
-		$("#date_time_form").change(function() {
+		$("#date_time_form").on('change keyup paste', function() {
 	  		validate_date_time()
 		});
+		<% if @previous_step == '2' || @previous_step == '3'  %>
+			load_saved_event()
+			$('#link_to_step_2').css('display','block')
+		<% else %>
+			localStorage.clear()
+		<% end %>	
 	<% end %>
 	<% if @step == '2' %>
-
+		load_saved_event()
+		validate_event_details()
+		$("#event_details_form").on('change keyup paste',function() {
+			validate_event_details()
+		});	
+	<% end %>
+	<% if @step == '3' %>
+		display_confirmation()
 	<% end %>	
 });
 
