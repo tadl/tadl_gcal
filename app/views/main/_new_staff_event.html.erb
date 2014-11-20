@@ -22,10 +22,10 @@
 		<span> Room: </span>
 		<select id="room" class="">
 			<option disabled="disabled" selected="selected">Select Room</option>
-			<option>McGuire</option>
-			<option>Thirlby</option>
+			<option>McGuire Room</option>
+			<option>Thirlby Room</option>
 			<option>Study Room D</option>
-			<option>Children's Story Room</option>
+			<option>Youth Story Room</option>
 			<option>Nelson Room</option>
 		</select>
 	</div>	
@@ -55,6 +55,9 @@
 		<span> Email: </span>
 		<input id="email"></input>
 		<br>
+		<input type="checkbox" id="private_event" value="true">
+		<span>Private Event (will not appear on sign) </span>
+
 	</div>
 	<div id="link_to_step_3" style="display: none">	
 		<%= link_to 'Next', new_staff_event_path(:step => '3'), :remote => true %>
@@ -94,6 +97,10 @@
 		<span> Email: </span>
 		<span id="email"></span>
 		<br>
+		<span id="private_event"></span>
 	</div>
+	<a href="#" onclick="create_event()">Create Event</a>
 	<%= link_to 'Back', new_staff_event_path(:step => '2', :previous_step => '3' ), :remote => true %>
+	<br>
+	<h3 id="message_div"></h3>
 <% end %>

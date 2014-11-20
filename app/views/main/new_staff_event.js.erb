@@ -19,6 +19,8 @@ function validate_date_time(){
 			pretty_end = moment(day + " " + end_time_full).format('h:mm a')
 			localStorage.setItem('pretty_start', pretty_start)
 			localStorage.setItem('pretty_end', pretty_end)
+			localStorage.setItem('ugly_start', start_time_full)
+			localStorage.setItem('ugly_end', end_time_full)
 			localStorage.setItem('room', room);
 			localStorage.setItem('day', day);
 			localStorage.setItem('start_time_hour', start_time_hour);
@@ -41,12 +43,18 @@ function validate_event_details(){
 	responsible = $("#responsible").val()
 	phone = $("#phone").val()
 	email = $("#email").val()
-	localStorage.setItem('title', title);
-	localStorage.setItem('summary', summary);
-	localStorage.setItem('attending', attending);
-	localStorage.setItem('responsible', responsible);
-	localStorage.setItem('phone', phone);
-	localStorage.setItem('email', email);
+	if($("#private_event").is(':checked')){
+		private_event = 'true'
+	}else{
+		private_event = 'false'
+	}
+	localStorage.setItem('private_event', private_event)
+	localStorage.setItem('title', title)
+	localStorage.setItem('summary', summary)
+	localStorage.setItem('attending', attending)
+	localStorage.setItem('responsible', responsible)
+	localStorage.setItem('phone', phone)
+	localStorage.setItem('email', email)
 	if(title && attending && (phone || email)){
 	  $('#link_to_step_3').css('display','block')
 	}else{
@@ -72,6 +80,10 @@ function load_saved_event(){
 	$("#email").val(localStorage.getItem('email'))
 	$("#pretty_start").val(localStorage.getItem('pretty_start'))
 	$("#pretty_end").val(localStorage.getItem('pretty_end'))
+	private_event = localStorage.getItem('private_event')
+	if (private_event == 'true'){
+		$("#private_event").attr('checked', true);
+	}
 }
 
 function display_confirmation(){
@@ -85,6 +97,39 @@ function display_confirmation(){
 	$("#email").html(localStorage.getItem('email'))
 	$("#pretty_start").html(localStorage.getItem('pretty_start'))
 	$("#pretty_end").html(localStorage.getItem('pretty_end'))
+	private_event = localStorage.getItem('private_event')
+	if (private_event == 'true'){
+		$("#private_event").html('Private event. Will not appear on sign')
+	}
+}
+
+function create_event(){
+	day = localStorage.getItem('day')
+	room = localStorage.getItem('room')
+	title = localStorage.getItem('title')
+	summary = localStorage.getItem('summary')
+	attending = localStorage.getItem('attending')
+	responsible = localStorage.getItem('responsible')
+	phone = localStorage.getItem('phone')
+	email = localStorage.getItem('email')
+	start = localStorage.getItem('ugly_start')
+	end = localStorage.getItem('ugly_end')
+	private_event = localStorage.getItem('private_event')
+	$.post( "http://railsbox-1-40317.use1.nitrousbox.com/events/create", { title: title, 
+		room: room,
+		summary: summary,
+		day: day,
+		start: start,
+		end: end,
+		})
+  .done(function( data ) {
+    if(data != 'error'){
+    	$('#message_div').html('Event successfully created.')
+    }else{
+    	$('#message_div').html('Error. Please try again later.')
+    }
+  });
+
 }
 
 jQuery(function(){
@@ -111,8 +156,3 @@ jQuery(function(){
 		display_confirmation()
 	<% end %>	
 });
-
-
-
-
-
