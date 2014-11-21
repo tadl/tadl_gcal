@@ -15,5 +15,7 @@
 /log/*.log
 /tmp
 
+/*/.fuse*
+
 /.env
 /config/*.p12

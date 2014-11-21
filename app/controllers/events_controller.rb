@@ -28,6 +28,7 @@ class EventsController < ApplicationController
     phone = params[:phone]
     email = params[:email]
     room = params[:room]
+    private_event = params[:private_event]
     day = Date.strptime(params[:day], '%m/%d/%Y')
     Time.zone = 'Eastern Time (US & Canada)' 
     start_time = Time.zone.parse(params[:start])
@@ -35,14 +36,32 @@ class EventsController < ApplicationController
     start_date = DateTime.new(day.year, day.month, day.day, start_time.hour, start_time.min, start_time.sec, start_time.zone) 
     end_date = DateTime.new(day.year, day.month, day.day, end_time.hour, end_time.min, end_time.sec, end_time.zone) 
     cal_id = ''
+    cal_name = ''
     rooms.each do |r|
       if r[:name] == room
         cal_id = r[:id]
+        cal_name = r[:name]
       end
     end
+    if private_event == 'true'
+      summary += ' (PRIVATE)'
+    end
+    if !attending
+      description += ', # Attending: ' + attending
+    end
+    if !responsible.empty?
+      description += ', Responsible Party: ' + responsible
+    end
+    if !phone.empty?
+      description += ', Phone: ' + phone
+    end
+    if !email.empty?
+      description += ', Email: ' + email
+    end
+
     event = {
       'summary' => summary,
-      'location' => 'Room',
+      'location' => cal_name,
       'start' => {
         'dateTime' => start_time.utc.iso8601
       },
@@ -91,20 +110,22 @@ class EventsController < ApplicationController
 
     events = []
     result.data.items.each do |e|
-      event = {
-        :name => e.summary.try(:gsub, /\n/, "").try(:gsub, '- advance', '').try(:strip),
-        :description => e.description.try(:gsub, /\n/, "").try(:strip),
-        :room => room_name,
-        :id => e.id,
-        :updated_time => e.updated,
-        :day => is_today(e.start.dateTime.in_time_zone('Eastern Time (US & Canada)').strftime('%B %e'),e.start.dateTime.in_time_zone('Eastern Time (US & Canada)')),
-        :day_of_week => e.start.dateTime.in_time_zone('Eastern Time (US & Canada)').strftime('%A'),
-        :start_time_raw => e.start.dateTime.in_time_zone('Eastern Time (US & Canada)'),
-        :start_time => e.start.dateTime.in_time_zone('Eastern Time (US & Canada)').strftime('%l:%M %p'),
-        :end_time_raw => e.end.dateTime.in_time_zone('Eastern Time (US & Canada)'),
-        :end_time => e.end.dateTime.in_time_zone('Eastern Time (US & Canada)').strftime('%l:%M %p'),
-      } 
-      events.push(event)
+      if !e.summary.include?("(PRIVATE)") 
+        event = {
+          :name => e.summary.try(:gsub, /\n/, "").try(:gsub, '- advance', '').try(:strip),
+          :description => e.description.try(:gsub, /\n/, "").try(:strip),
+          :room => room_name,
+          :id => e.id,
+          :updated_time => e.updated,
+          :day => is_today(e.start.dateTime.in_time_zone('Eastern Time (US & Canada)').strftime('%B %e'),e.start.dateTime.in_time_zone('Eastern Time (US & Canada)')),
+          :day_of_week => e.start.dateTime.in_time_zone('Eastern Time (US & Canada)').strftime('%A'),
+          :start_time_raw => e.start.dateTime.in_time_zone('Eastern Time (US & Canada)'),
+          :start_time => e.start.dateTime.in_time_zone('Eastern Time (US & Canada)').strftime('%l:%M %p'),
+          :end_time_raw => e.end.dateTime.in_time_zone('Eastern Time (US & Canada)'),
+          :end_time => e.end.dateTime.in_time_zone('Eastern Time (US & Canada)').strftime('%l:%M %p'),
+        } 
+        events.push(event)
+      end  
     end
     return events
   end

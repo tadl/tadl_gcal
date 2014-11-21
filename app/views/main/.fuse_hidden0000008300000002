@@ -121,11 +121,6 @@ function create_event(){
 		day: day,
 		start: start,
 		end: end,
-		attending: attending,
-		private_event: private_event,
-		responsible: responsible,
-		phone: phone,
-		email: email,
 		})
   .done(function( data ) {
     if(data != 'error'){
