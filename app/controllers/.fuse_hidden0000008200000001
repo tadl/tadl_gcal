@@ -51,7 +51,7 @@ class EventsController < ApplicationController
       },
       'description' => description
     }
-    client = create_gapi_client(current_user.email)
+    client = create_gapi_client()
     cal_api = client.discovered_api('calendar', 'v3')
     if params[:summary] && params[:summary]
       result = client.execute({
