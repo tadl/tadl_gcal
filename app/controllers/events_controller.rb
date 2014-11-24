@@ -8,7 +8,7 @@ class EventsController < ApplicationController
     if params[:days_to_show]
       days_to_show = params[:days_to_show].to_i
     else
-      days_to_show = 3
+      days_to_show = 4
     end  
     events = []
     rooms.each do |r|      
@@ -110,7 +110,7 @@ class EventsController < ApplicationController
 
     events = []
     result.data.items.each do |e|
-      if !e.summary.include?("(PRIVATE)") 
+      if !e.summary.include?("(PRIVATE)") && !e.end.date
         event = {
           :name => e.summary.try(:gsub, /\n/, "").try(:gsub, '- advance', '').try(:strip),
           :description => e.description.try(:gsub, /\n/, "").try(:strip),
@@ -124,6 +124,23 @@ class EventsController < ApplicationController
           :end_time_raw => e.end.dateTime.in_time_zone('Eastern Time (US & Canada)'),
           :end_time => e.end.dateTime.in_time_zone('Eastern Time (US & Canada)').strftime('%l:%M %p'),
         } 
+        events.push(event)
+      end
+      if !e.summary.include?("(PRIVATE)") && e.end.date
+        event ={
+          :name => e.summary.try(:gsub, /\n/, "").try(:gsub, '- advance', '').try(:strip),
+          :description => e.description.try(:gsub, /\n/, "").try(:strip),
+          :room => room_name,
+          :id => e.id,
+          :updated_time => e.updated,
+          :day => is_today(e.start.date.in_time_zone('Eastern Time (US & Canada)').strftime('%B %e'),e.start.date.in_time_zone('Eastern Time (US & Canada)')),
+          :day_of_week => e.start.date.in_time_zone('Eastern Time (US & Canada)').strftime('%A'),
+          :start_time_raw => e.start.date.in_time_zone('Eastern Time (US & Canada)'),
+          :start_time => e.start.date.in_time_zone('Eastern Time (US & Canada)').strftime('%l:%M %p'),
+          :end_time_raw => e.end.date.in_time_zone('Eastern Time (US & Canada)'),
+          :end_time => e.end.date.in_time_zone('Eastern Time (US & Canada)').strftime('%l:%M %p'),
+          :all_day => 'true'
+        }
         events.push(event)
       end  
     end
