@@ -54,11 +54,47 @@
 		<br>
 		<span> Email: </span>
 		<input id="email"></input>
+		<div id="room_arangment_mcg" style="display: none">
+			<span> Select Room Arrangment:</span>
+			<br>
+			<label>
+    			<input type="radio" name="mcg_arrangment" value="McGuire Theater Style"/>
+   				<img src="https://s3.amazonaws.com/tadl-sign-assets/opt1.png">
+  			</label>
+  			<label>
+    			<input type="radio" name="mcg_arrangment" value="McGuire Classroom Style"/>
+   				<img src="https://s3.amazonaws.com/tadl-sign-assets/opt2.png">
+  			</label>
+  			<label>
+    			<input type="radio" name="mcg_arrangment" value="McGuire Room A or B Theater Style"/>
+   				<img src="https://s3.amazonaws.com/tadl-sign-assets/opt3.png">
+  			</label>
+  			<label>
+    			<input type="radio" name="mcg_arrangment" value="McGuire Room A or B Classroom Style"/>
+   				<img src="https://s3.amazonaws.com/tadl-sign-assets/opt4.png">
+  			</label>			
+		</div>
+		<div id="room_arangment_thir" style="display: none">
+			<span> Select Room Arrangment:</span>
+			<br>
+			<label>
+    			<input type="radio" name="thir_arrangment" value="Thirlby Theater Style"/>
+   				<img src="https://s3.amazonaws.com/tadl-sign-assets/opt5.png">
+  			</label>
+  			<label>
+    			<input type="radio" name="thir_arrangment" value="Thirlby Board Style"/>
+   				<img src="https://s3.amazonaws.com/tadl-sign-assets/opt6.png">
+  			</label>
+  			<label>
+    			<input type="radio" name="thir_arrangment" value="McGuire Classroom Style"/>
+   				<img src="https://s3.amazonaws.com/tadl-sign-assets/opt7.png">
+  			</label>
+		</div>
 		<br>
 		<input type="checkbox" id="private_event" value="true">
 		<span>Private Event (will not appear on sign) </span>
-
 	</div>
+
 	<div id="link_to_step_3" style="display: none">	
 		<%= link_to 'Next', new_staff_event_path(:step => '3'), :remote => true %>
 	</div>

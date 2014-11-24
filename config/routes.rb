@@ -3,7 +3,7 @@ Rails.application.routes.draw do
   get 'main/home'
   get 'main/workorder'
   get 'main/new_staff_event'
-  match 'new_staff_event', to: 'main#new_staff_event', as: 'new_staff_event', via: [:get, :post], :defaults => { :format => 'js' }
+  match 'new_staff_event', to: 'main#new_staff_event', as: 'new_staff_event', via: [:get, :post], :format => 'js'
   get 'events/list'
   get 'events/by_room'
   match 'events/create', to: 'events#create', via: [:get, :post]

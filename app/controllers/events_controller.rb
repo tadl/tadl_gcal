@@ -29,6 +29,7 @@ class EventsController < ApplicationController
     email = params[:email]
     room = params[:room]
     private_event = params[:private_event]
+    room_arrangement = params[:room_arrangement]
     day = Date.strptime(params[:day], '%m/%d/%Y')
     Time.zone = 'Eastern Time (US & Canada)' 
     start_time = Time.zone.parse(params[:start])
@@ -58,7 +59,9 @@ class EventsController < ApplicationController
     if !email.empty?
       description += ', Email: ' + email
     end
-
+    if !room_arrangement.empty?
+      description += ', Room Arrangement: ' + room_arrangement
+    end
     event = {
       'summary' => summary,
       'location' => cal_name,
