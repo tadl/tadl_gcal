@@ -2,6 +2,7 @@ class EventsController < ApplicationController
   require 'google/api_client'
   require 'google/api_client/client_secrets'
   require 'google/api_client/auth/installed_app'
+  before_action :authenticate_user!, :except => [:list]
 
   def list
     headers['Access-Control-Allow-Origin'] = '*'
@@ -162,4 +163,30 @@ class EventsController < ApplicationController
       return day_of_week + ', ' + date
     end
   end
+
+  def find_users
+    user_to_find = params[:user_to_find]
+    client = create_directory_client()
+    directory_api = client.discovered_api('admin', 'directory_v1')
+    first_name_results = client.execute({
+      api_method: directory_api.users.list,
+      parameters: {
+        domain: 'tadl.org',
+        query: 'givenName%3A'+ user_to_find +'*'
+      }
+    })
+    last_name_results = client.execute({
+      api_method: directory_api.users.list,
+      parameters: {
+        domain: 'tadl.org',
+        query: 'familyName%3A'+ user_to_find +'*'
+      }
+    })
+    test = last_name_results.data.users + first_name_results.data.users
+    test = test.uniq { |user| user.id }
+    test = test.select {|user| user.includeInGlobalAddressList != false}
+    render :json =>{:events => test}  
+  end
+
+
 end

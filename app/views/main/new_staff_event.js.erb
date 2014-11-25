@@ -102,6 +102,12 @@ function load_saved_event(){
 	if (private_event == 'true'){
 		$("#private_event").attr('checked', true);
 	}
+	if(localStorage.getItem('people')){
+		people_array = JSON.parse(localStorage.getItem('people'))
+		if(people_array.length >= 1){
+			show_people()
+		}
+	}
 }
 
 function display_confirmation(){
@@ -118,6 +124,12 @@ function display_confirmation(){
 	private_event = localStorage.getItem('private_event')
 	if (private_event == 'true'){
 		$("#private_event").html('Private event. Will not appear on sign')
+	}
+	if(localStorage.getItem('people')){
+		people_array = JSON.parse(localStorage.getItem('people'))
+		if(people_array.length >= 1){
+			show_people(true)
+		}
 	}
 }
 
@@ -173,7 +185,64 @@ function create_event(){
 
 }
 
+function people_search(){
+	user = $("#people_search").val()
+	if(user){
+		$.post( "http://railsbox-1-40317.use1.nitrousbox.com/events/find_users", {
+			user_to_find: user,
+		})
+  		.done(function( data ) {
+  			$("#user_list").empty()
+    		data.events.forEach(function(person){
+    			onclick_prep = "'"+ person.primaryEmail +"'";
+    			$("#user_list").append(person.name.fullName + ' ('+ person.primaryEmail + ') <a href="#" onclick="add_person('+ onclick_prep +')">Add</a><br>');
+    		})
+  		});
+	}else{
+		$("#user_list").empty()
+	}
+}
+
+function add_person(user_email){
+	people_array = JSON.parse(localStorage.getItem('people'))
+	if(people_array){
+		people_array.push(user_email)
+		localStorage.setItem('people', JSON.stringify(people_array))
+	}else{
+		new_array = []
+		new_array.push(user_email)
+		localStorage.setItem('people', JSON.stringify(new_array))
+	}
+	show_people()
+}
+
+function remove_person(id){
+	people_array = JSON.parse(localStorage.getItem('people'))
+	if(id == 0){
+		people_array.shift()
+	}else{
+		people_array.splice(people_array.indexOf(id), 1)	
+	}
+	localStorage.setItem('people', JSON.stringify(people_array))
+	show_people()
+}
+
+function show_people(no_remove){
+	people_array = JSON.parse(localStorage.getItem('people'))
+	$('#attending_list').empty()
+	people_array.forEach(function(person){
+		id = people_array.indexOf(person);
+		if(no_remove == true){
+			$('#attending_list').append(person + '<br>')
+		}else{
+			onclick_prep = "'"+ id +"'";
+			$('#attending_list').append(person + ' <a href="#" onclick="remove_person('+ id +')">Remove</a><br>')
+		}
+	})
+}
+
 jQuery(function(){
+	timeout_id = ''
 	load_create_staff_event();
 	<% if @step == '1' %>
 			validate_date_time()
@@ -193,7 +262,11 @@ jQuery(function(){
 		validate_event_details()
 		$("#event_details_form").on('change keyup paste',function() {
 			validate_event_details()
-		});	
+		});
+		$("#people_search").on('change keyup paste',function() {
+			clearTimeout(timeout_id); 
+			timeout_id = setTimeout('people_search()',1000)
+		});		
 	<% end %>
 	<% if @step == '3' %>
 		display_confirmation()
