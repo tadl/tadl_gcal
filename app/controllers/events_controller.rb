@@ -24,6 +24,7 @@ class EventsController < ApplicationController
     summary = params[:title]
     description = params[:summary]
     attending = params[:attending]
+    attendees = params[:attendees]
     responsible = params[:responsible]
     attending = params[:attending]
     phone = params[:phone]
@@ -63,6 +64,13 @@ class EventsController < ApplicationController
     if !room_arrangement.empty?
       description += ', Room Arrangement: ' + room_arrangement
     end
+
+    attendees_array = attendees.map do |attendee|
+      {
+        "email" => attendee
+      }
+    end
+
     event = {
       'summary' => summary,
       'location' => cal_name,
@@ -72,15 +80,17 @@ class EventsController < ApplicationController
       'end' => {
         'dateTime' => end_time.utc.iso8601
       },
-      'description' => description
+      'description' => description,
+      'attendees' => attendees_array 
     }
-    client = create_gapi_client(current_user.email)
+    client = create_gapi_client
     cal_api = client.discovered_api('calendar', 'v3')
     if params[:summary] && params[:summary]
       result = client.execute({
         :api_method => cal_api.events.insert,
         :parameters => {
           calendarId: cal_id,
+          sendNotifications: true,
         },
         :body => JSON.dump(event),
         :headers => {'Content-Type' => 'application/json'}
@@ -90,7 +100,7 @@ class EventsController < ApplicationController
     if result && result.data.id
       message = result.data
     else
-      message = 'error'
+      message = result.data
     end
     render :json =>{:message => message}
   end

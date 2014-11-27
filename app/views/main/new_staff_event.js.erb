@@ -154,6 +154,7 @@ function create_event(){
 	email = localStorage.getItem('email')
 	start = localStorage.getItem('ugly_start')
 	end = localStorage.getItem('ugly_end')
+  attendees = JSON.parse(localStorage.getItem('people'))
 	private_event = localStorage.getItem('private_event')
 	room_arrangement = ''
 	if(room == 'McGuire Room'){
@@ -173,7 +174,8 @@ function create_event(){
 		responsible: responsible,
 		phone: phone,
 		email: email,
-		room_arrangement: room_arrangement
+		room_arrangement: room_arrangement,
+    attendees: attendees
 		})
   .done(function( data ) {
     if(data != 'error'){
@@ -263,7 +265,7 @@ jQuery(function(){
 		$("#event_details_form").on('change keyup paste',function() {
 			validate_event_details()
 		});
-		$("#people_search").on('change keyup paste',function() {
+		$("#people_search").on('keyup paste',function() {
 			clearTimeout(timeout_id); 
 			timeout_id = setTimeout('people_search()',1000)
 		});		
