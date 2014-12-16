@@ -108,7 +108,7 @@ GEM
       activesupport (= 4.1.6)
       rake (>= 0.8.7)
       thor (>= 0.18.1, < 2.0)
-    rake (10.3.2)
+    rake (10.4.2)
     retriable (1.4.1)
     signet (0.5.1)
       addressable (>= 2.2.3)
@@ -145,3 +145,4 @@ DEPENDENCIES
   rails (= 4.1.6)
   rails-api
   spring
+  tzinfo

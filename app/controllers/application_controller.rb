@@ -2,6 +2,7 @@ class ApplicationController < ActionController::Base
 	require 'active_support/core_ext/numeric'
 	helper_method :current_user	
   helper_method :authenticate_user!
+  helper_method :timezone_offset
 
   def authenticate_user!
     if !current_user
@@ -16,6 +17,12 @@ class ApplicationController < ActionController::Base
   def current_user
     @current_user ||= User.find(session[:user_id]) if session[:user_id]
   end
+
+  def timezone_offset
+    tz = TZInfo::Timezone.get('America/New_York')
+    off_set = tz.current_period.utc_total_offset.to_i / 60 / 60
+    return off_set
+  end  
 
   def create_gapi_client
   	key_secret = 'notasecret'

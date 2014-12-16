@@ -2,8 +2,8 @@ class EventsController < ApplicationController
   require 'google/api_client'
   require 'google/api_client/client_secrets'
   require 'google/api_client/auth/installed_app'
+  require 'tzinfo'
   before_action :authenticate_user!, :except => [:list]
-
   def list
     headers['Access-Control-Allow-Origin'] = '*'
     if params[:days_to_show]
@@ -32,12 +32,16 @@ class EventsController < ApplicationController
     room = params[:room]
     private_event = params[:private_event]
     room_arrangement = params[:room_arrangement]
-    day = Date.strptime(params[:day], '%m/%d/%Y')
-    Time.zone = 'Eastern Time (US & Canada)' 
+    Time.zone = 'Eastern Time (US & Canada)'
     start_time = Time.zone.parse(params[:start])
     end_time = Time.zone.parse(params[:end])
-    start_date = DateTime.new(day.year, day.month, day.day, start_time.hour, start_time.min, start_time.sec, start_time.zone) 
-    end_date = DateTime.new(day.year, day.month, day.day, end_time.hour, end_time.min, end_time.sec, end_time.zone) 
+    offset = timezone_offset()
+    day_raw = Date.strptime(params[:day], '%m/%d/%Y')
+    day = DateTime.new(day_raw.year, day_raw.month, day_raw.day) 
+    start_date = DateTime.new(day.year, day.month, day.day, start_time.hour, start_time.min, start_time.sec, end_time.zone).in_time_zone(offset) 
+    end_date = DateTime.new(day.year, day.month, day.day, end_time.hour, end_time.min, end_time.sec, end_time.zone).in_time_zone(offset)
+    puts offset
+    puts start_date
     cal_id = ''
     cal_name = ''
     rooms.each do |r|
@@ -75,10 +79,10 @@ class EventsController < ApplicationController
       'summary' => summary,
       'location' => cal_name,
       'start' => {
-        'dateTime' => start_time.utc.iso8601
+        'dateTime' => start_date.iso8601
       },
       'end' => {
-        'dateTime' => end_time.utc.iso8601
+        'dateTime' => end_date.iso8601
       },
       'description' => description,
       'attendees' => attendees_array 
