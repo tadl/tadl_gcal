@@ -53,7 +53,7 @@ class ApplicationController < ActionController::Base
       :application_version => '1.0.0'
     )
     key = Google::APIClient::KeyUtils.load_from_pkcs12(keypath, key_secret)
-    asserter = Google::APIClient::JWTAsserter.new(service_account_email, 'https://www.googleapis.com/auth/admin.directory.user.readonly', key)
+    asserter = Google::APIClient::JWTAsserter.new(service_account_email, ['https://www.googleapis.com/auth/admin.directory.user.readonly', 'https://www.googleapis.com/auth/admin.directory.group.readonly'], key)
     client.authorization = asserter.authorize(ENV['admin_email'])
     return client
   end

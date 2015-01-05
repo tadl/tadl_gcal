@@ -179,28 +179,20 @@ class EventsController < ApplicationController
   end
 
   def find_users
-    user_to_find = params[:user_to_find]
-    client = create_directory_client()
-    directory_api = client.discovered_api('admin', 'directory_v1')
-    first_name_results = client.execute({
-      api_method: directory_api.users.list,
-      parameters: {
-        domain: 'tadl.org',
-        query: 'givenName%3A'+ user_to_find +'*'
-      }
-    })
-    last_name_results = client.execute({
-      api_method: directory_api.users.list,
-      parameters: {
-        domain: 'tadl.org',
-        query: 'familyName%3A'+ user_to_find +'*'
-      }
-    })
-    test = last_name_results.data.users + first_name_results.data.users
-    test = test.uniq { |user| user.id }
-    test = test.select {|user| user.includeInGlobalAddressList != false}
-    render :json =>{:events => test}  
+    user_to_find = params[:user_to_find].downcase rescue nil
+    users = Rails.cache.read("users")
+    groups = Rails.cache.read("groups")
+    results = []
+    users.each do |u|
+      if (u['first_name'].include? user_to_find) || (u['last_name'].include? user_to_find)
+        results = results.push(u)
+      end
+    end
+    groups.each do |g|
+      if g['search_name'].include? user_to_find
+        results = results.push(g)
+      end
+    end
+    render :json =>{:results => results}
   end
-
-
 end

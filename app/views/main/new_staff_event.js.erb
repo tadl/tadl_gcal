@@ -216,9 +216,9 @@ function people_search(){
 		})
   		.done(function( data ) {
   			$("#user_list").empty()
-    		data.events.forEach(function(person){
-    			onclick_prep = "'"+ person.primaryEmail +"'";
-    			$("#user_list").append(person.name.fullName + ' ('+ person.primaryEmail + ') <a href="#" onclick="add_person('+ onclick_prep +')">Add</a><br>');
+    		data.results.forEach(function(result){
+    			onclick_prep = "'"+ result.email +"'";
+    			$("#user_list").append(result.name + ' ('+ result.email + ') <a href="#" onclick="add_person('+ onclick_prep +')">Add</a><br>');
     		})
   		});
 	}else{
