@@ -288,7 +288,7 @@ jQuery(function(){
 		});
 		$("#people_search").on('keyup paste',function() {
 			clearTimeout(timeout_id); 
-			timeout_id = setTimeout('people_search()',1000)
+			timeout_id = setTimeout('people_search()',200)
 		});		
 	<% end %>
 	<% if @step == '3' %>

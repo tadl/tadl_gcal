@@ -36,7 +36,7 @@ class ApplicationController < ActionController::Base
     client.authorization = Signet::OAuth2::Client.new(
       :token_credential_uri => 'https://accounts.google.com/o/oauth2/token',
       :audience => 'https://accounts.google.com/o/oauth2/token',
-      :scope => 'https://www.googleapis.com/auth/calendar',
+      :scope => ['https://www.googleapis.com/auth/calendar', 'https://www.googleapis.com/auth/admin.directory.group.member.readonly'],
       :issuer => service_account_email,
       :signing_key => key
     )
@@ -52,8 +52,13 @@ class ApplicationController < ActionController::Base
       :application_name => 'tadl_gcal',
       :application_version => '1.0.0'
     )
+
+    permissions = ['https://www.googleapis.com/auth/admin.directory.user.readonly', 
+      'https://www.googleapis.com/auth/admin.directory.group.readonly',
+      'https://www.googleapis.com/auth/admin.directory.group.member.readonly'
+    ]
     key = Google::APIClient::KeyUtils.load_from_pkcs12(keypath, key_secret)
-    asserter = Google::APIClient::JWTAsserter.new(service_account_email, ['https://www.googleapis.com/auth/admin.directory.user.readonly', 'https://www.googleapis.com/auth/admin.directory.group.readonly'], key)
+    asserter = Google::APIClient::JWTAsserter.new(service_account_email, permissions, key)
     client.authorization = asserter.authorize(ENV['admin_email'])
     return client
   end

@@ -38,9 +38,11 @@ task :get_users_and_groups => :environment do
     	maxResults: 200
   	}
 	})
+	puts group_api_request.data.groups.to_json
 	groups = []
 	group_api_request.data.groups.each do |g|
 		group = Hash.new
+		group['id'] = g['id']
 		group['name'] = g['name']
 		group['search_name'] = g['name'].downcase
 		group['email'] = g['email']

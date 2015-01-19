@@ -68,6 +68,22 @@ class EventsController < ApplicationController
     if !room_arrangement.empty?
       description += ', Room Arrangement: ' + room_arrangement
     end
+#Fix for handling group invites
+    groups = Rails.cache.read("group_members")
+    groups_for_later = []
+    attendees.each do |a|
+      groups.each do |g|
+        if a == g['email']
+          groups_for_later.push(a)
+          array_index = attendees.index(a)
+          attendees.delete_at(array_index)
+          g['members'].each do |m|
+            attendees.push(m)
+          end
+        end 
+      end
+    end
+    puts attendees.to_s
 
     attendees_array = attendees.map do |attendee|
       {
@@ -107,6 +123,25 @@ class EventsController < ApplicationController
       message = result.data
     end
     render :json =>{:message => message}
+
+    if groups_for_later.size >= 1
+      groups_for_later.each do |g|
+        group = Hash.new
+        group['email'] = g
+        event['attendees'].push(group)
+      end
+      puts event.to_json 
+      client.execute({
+        :api_method => cal_api.events.update,
+        :parameters => {
+          calendarId: cal_id,
+          eventId: result.data.id,
+          sendNotifications: false
+        },
+        :body => JSON.dump(event),
+        :headers => {'Content-Type' => 'application/json'}
+      })
+    end
   end
 
   def fetch_events(cal_id, room_name, days_to_show)
@@ -193,6 +228,7 @@ class EventsController < ApplicationController
         results = results.push(g)
       end
     end
+    results.sort_by {|r| r['name']}
     render :json =>{:results => results}
   end
 end
