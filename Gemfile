@@ -20,6 +20,8 @@ gem 'google-api-client'
 
 gem 'tzinfo'
 
+gem 'recurring_select'
+
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.1.2'
 

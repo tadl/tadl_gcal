@@ -3,6 +3,7 @@ class EventsController < ApplicationController
   require 'google/api_client/client_secrets'
   require 'google/api_client/auth/installed_app'
   require 'tzinfo'
+  require 'ice_cube'
   before_action :authenticate_user!, :except => [:list]
   def list
     headers['Access-Control-Allow-Origin'] = '*'
@@ -30,6 +31,9 @@ class EventsController < ApplicationController
     phone = params[:phone]
     email = params[:email]
     room = params[:room]
+    recurrence_text = RecurringSelect.dirty_hash_to_rule(params[:reccurance])
+    recurrence = recurrence_text.to_ical
+    puts 'Reoccurs - ' + recurrence
     private_event = params[:private_event]
     room_arrangement = params[:room_arrangement]
     Time.zone = 'Eastern Time (US & Canada)'
@@ -68,22 +72,6 @@ class EventsController < ApplicationController
     if !room_arrangement.empty?
       description += ', Room Arrangement: ' + room_arrangement
     end
-#Fix for handling group invites
-    groups = Rails.cache.read("group_members")
-    groups_for_later = []
-    attendees.each do |a|
-      groups.each do |g|
-        if a == g['email']
-          groups_for_later.push(a)
-          array_index = attendees.index(a)
-          attendees.delete_at(array_index)
-          g['members'].each do |m|
-            attendees.push(m)
-          end
-        end 
-      end
-    end
-    puts attendees.to_s
 
     attendees_array = attendees.map do |attendee|
       {
@@ -95,14 +83,18 @@ class EventsController < ApplicationController
       'summary' => summary,
       'location' => cal_name,
       'start' => {
-        'dateTime' => start_date.iso8601
+        'dateTime' => start_date.iso8601,
+        'timeZone' => 'America/Detroit'
       },
       'end' => {
-        'dateTime' => end_date.iso8601
+        'dateTime' => end_date.iso8601,
+        'timeZone' => 'America/Detroit'
       },
+      'recurrence' => ['RRULE:' + recurrence],
       'description' => description,
       'attendees' => attendees_array 
     }
+
     client = create_gapi_client
     cal_api = client.discovered_api('calendar', 'v3')
     if params[:summary] && params[:summary]
@@ -123,25 +115,6 @@ class EventsController < ApplicationController
       message = result.data
     end
     render :json =>{:message => message}
-
-    if groups_for_later.size >= 1
-      groups_for_later.each do |g|
-        group = Hash.new
-        group['email'] = g
-        event['attendees'].push(group)
-      end
-      puts event.to_json 
-      client.execute({
-        :api_method => cal_api.events.update,
-        :parameters => {
-          calendarId: cal_id,
-          eventId: result.data.id,
-          sendNotifications: false
-        },
-        :body => JSON.dump(event),
-        :headers => {'Content-Type' => 'application/json'}
-      })
-    end
   end
 
   def fetch_events(cal_id, room_name, days_to_show)

@@ -19,6 +19,11 @@
 		<span> End Time: </span>
 		<%= time_select 'end_time', 'end_time', {:minute_step => 30, :ampm => true, :default => @default_end}, {:class => 'event_times_box'} %>
 		<br>
+		<span> Reoccuring: </span>
+		<%= form_for @event do |f| %>
+			<%= f.select_recurring :recurring_rule_column %>
+		<% end %>
+		<br>
 		<span> Room: </span>
 		<select id="room" class="">
 			<option disabled="disabled" selected="selected">Select Room</option>
@@ -127,6 +132,9 @@
 		<br>
 		<span> End Time: </span>
 		<span id="pretty_end"></span>
+		<br>
+		<span> Reoccurence: </span>
+		<span id="reoccurence"></span>
 		<br>
 		<span> Room: </span>
 		<span id="room"></span>
