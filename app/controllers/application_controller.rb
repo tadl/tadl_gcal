@@ -9,10 +9,6 @@ class ApplicationController < ActionController::Base
       redirect_to root_url, :alert => 'You need to sign in for access to this page.'
     end
   end
- 
-  def rooms
-		@rooms = eval(ENV['rooms'])
-	end
 
   def current_user
     @current_user ||= User.find(session[:user_id]) if session[:user_id]

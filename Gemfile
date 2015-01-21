@@ -22,6 +22,14 @@ gem 'tzinfo'
 
 gem 'recurring_select'
 
+gem 'sidekiq'
+
+gem 'sidetiq'
+
+gem 'dalli'
+
+gem 'redis'
+
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.1.2'
 

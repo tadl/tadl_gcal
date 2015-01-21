@@ -5,20 +5,13 @@ class EventsController < ApplicationController
   require 'tzinfo'
   require 'ice_cube'
   before_action :authenticate_user!, :except => [:list]
+  
   def list
     headers['Access-Control-Allow-Origin'] = '*'
-    if params[:days_to_show]
-      days_to_show = params[:days_to_show].to_i
-    else
-      days_to_show = 4
-    end  
-    events = []
-    rooms.each do |r|      
-  	  get_events = fetch_events(r[:id], r[:name], days_to_show)
-      events = events + get_events
-    end
-    events = events.sort_by{|k| k[:start_time_raw]}
-  	render :json =>{:events => events}	
+    events = Rails.cache.read('events')
+    time = Rails.cache.read('last_updated')
+    last_updated = 
+  	render :json =>{:last_updated => time, :events => events}	
   end
 
   def create
@@ -112,7 +105,7 @@ class EventsController < ApplicationController
     if result && result.data.id
       message = result.data
     else
-      message = result.data
+      message = 'Something went wrong'
     end
     render :json =>{:message => message}
   end
