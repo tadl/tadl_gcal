@@ -6,6 +6,10 @@ class EventsController < ApplicationController
   require 'ice_cube'
   before_action :authenticate_user!, :except => [:list]
   
+  def rooms
+   @rooms = eval(ENV['rooms'])
+  end
+
   def list
     headers['Access-Control-Allow-Origin'] = '*'
     events = Rails.cache.read('events')

@@ -37,22 +37,25 @@ class CalendarScaper < ApplicationController
 
     events = []
     result.data.items.each do |e|
-      if !e.summary.include?("(PRIVATE)") && !e.end.date
-        event = Hash.new
-        event['name'] = e.summary.try(:gsub, /\n/, "").try(:gsub, '- advance', '').try(:strip)
-        event['description'] = e.description.try(:gsub, /\n/, "").try(:strip)
-        event['room'] = room_name
-        event['id'] = e.id
-        event['updated_time'] = e.updated
-        event['day'] = is_today(e.start.dateTime.in_time_zone('Eastern Time (US & Canada)').strftime('%B %e'),e.start.dateTime.in_time_zone('Eastern Time (US & Canada)'))
-        event['day_of_week'] = e.start.dateTime.in_time_zone('Eastern Time (US & Canada)').strftime('%A')
-        event['start_time_raw'] = e.start.dateTime.in_time_zone('Eastern Time (US & Canada)')
-        event['start_time'] = e.start.dateTime.in_time_zone('Eastern Time (US & Canada)').strftime('%l:%M %p')
-        event['end_time_raw'] = e.end.dateTime.in_time_zone('Eastern Time (US & Canada)')
-        event['end_time'] = e.end.dateTime.in_time_zone('Eastern Time (US & Canada)').strftime('%l:%M %p')
-        if !e.summary.include?("(PRIVATE)") && e.end.date
-          event['all_day'] = 'true'
-        end
+      event = Hash.new
+      event['name'] = e.summary.try(:gsub, /\n/, "").try(:gsub, '- advance', '').try(:strip)
+      event['description'] = e.description.try(:gsub, /\n/, "").try(:strip)
+      event['room'] = room_name
+      event['id'] = e.id
+      event['updated_time'] = e.updated
+      event['day'] = is_today(e.start.dateTime.in_time_zone('Eastern Time (US & Canada)').strftime('%B %e'),e.start.dateTime.in_time_zone('Eastern Time (US & Canada)'))
+      event['day_of_week'] = e.start.dateTime.in_time_zone('Eastern Time (US & Canada)').strftime('%A')
+      event['start_time_raw'] = e.start.dateTime.in_time_zone('Eastern Time (US & Canada)')
+      event['start_time'] = e.start.dateTime.in_time_zone('Eastern Time (US & Canada)').strftime('%l:%M %p')
+      event['end_time_raw'] = e.end.dateTime.in_time_zone('Eastern Time (US & Canada)')
+      event['end_time'] = e.end.dateTime.in_time_zone('Eastern Time (US & Canada)').strftime('%l:%M %p')
+      if e.end.date
+        event['all_day'] = 'true'
+      end
+      if event['name'].include? "(DISPLAY)" 
+        event['name'].gsub!("(DISPLAY)","")
+        event['name'].gsub!("(TADL)","")
+        event['name'].gsub!("(PATRON)","")
         events.push(event)
       end
     end
